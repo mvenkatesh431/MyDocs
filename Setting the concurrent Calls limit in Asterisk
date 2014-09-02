@@ -65,4 +65,4 @@ same=> n,hangup()
 
 So We are using Gotoif statement to compare the noofcalls are lessthan (or) greter than the throshold value (In this example we are using throshold value as 1) that means Asterisk allows only one concurrent call if two phones are connected, and communicating each other..  on that time if any other person want to call any other extension it will not work because we are not allowing morethan one concurrent call so for caller Convienance we are playing one message like all the lines are busy..
 
-In single word “number of concurrent calls are less than threshold value, accept the call, otherwise drop the call with channel status: CHANUNAVAIL” .  
+In single word “number of concurrent calls are less than threshold value, accept the call, otherwise drop the call with channel status: CHANUNAVAIL” .   
