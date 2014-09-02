@@ -1,0 +1,68 @@
+Setting the concurrent Calls limit in Asterisk:
+
+                     To set concurrent call limit in asterisk I am using two Dialplan Functions Those are GROUP() and GROUP_COUNT().
+By using these functions we can limit our Concurrent calls without changing any other Configuration file. Just changing the Extension.conf is enough. 
+
+GROUP() function defines the trunk group
+GROUP_COUNT() function returns the number of concurrent calls on the given trunk group.
+
+Sip.conf and Extensions.conf files are as follows..
+
+SIP.Conf file :
+                     In sip.conf file no need to change anything just make sure all of our phones are registered or not. If all phones are have Registration details nothing to edit in this File.
+
+My Sip.conf File :
+.
+.
+. 
+[100] 
+type=friend 
+secret=1234 
+host=dynamic 
+context=callcounter 
+allow=speex 
+
+
+[110] 
+type=friend 
+secret=1234 
+host=dynamic 
+context=callcounter 
+allow=speex 
+ 
+
+[120] 
+type=friend 
+secret=1234 
+host=dynamic 
+context=callcounter 
+allow=speex 
+
+Extensions.conf file : 
+
+               Entire process is in side of Extension.conf file all phones are registrated with asterisk(in sip.conf) and all are have same Context (in our example) i.e callcounter. So here is our Callcounter Section ...
+
+[callcounter] 
+exten => _1XX,1,verbose(1,caller ${EXTEN} is entered into dialplan ) 
+exten => _1XX,n,set(GROUP()=noofcalls) 
+exten => _1XX,n,verbose(1,No of concurrent calls ${GROUP_COUNT(noofcalls)} ) 
+exten => _1XX,n,Gotoif($[${GROUP_COUNT(noofcalls)}>2]?MAX) 
+;same => n,gotoif($[${GROUP_COUNT(noofcalls)} > 1]?999) 
+exten => _1XX,n,Dial(SIP/${EXTEN},30) 
+exten => _1XX,n,Hangup() 
+exten => _1XX,n(MAX),verbose(1,No of calllimit crossed ) 
+same=> n,playback(call) 
+same=> n,hangup() 
+
+         In this Dialplan whenever the caller dials extension between 100 to 199 (here we are using just three extensions i.e 100,110,120 for our observation)  and the call comes into callcounter  Context.There we are using GROUP() function to define name of the trunk group associated with the incoming calls I named it as noofcalls.
+
+
+
+
+
+
+    Now we can use GROUP_COUNT(noofcalls) to count the number of concurrent-calls flowing through the Channel.
+
+So We are using Gotoif statement to compare the noofcalls are lessthan (or) greter than the throshold value (In this example we are using throshold value as 1) that means Asterisk allows only one concurrent call if two phones are connected, and communicating each other..  on that time if any other person want to call any other extension it will not work because we are not allowing morethan one concurrent call so for caller Convienance we are playing one message like all the lines are busy..
+
+In single word “number of concurrent calls are less than threshold value, accept the call, otherwise drop the call with channel status: CHANUNAVAIL” .  
