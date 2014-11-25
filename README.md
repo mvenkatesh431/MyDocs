@@ -10,4 +10,4 @@ contact details :
 ================
 Venkatesh Macha,
 linuxvenkey@gmail.com,
-blog: http://sillycodes4u.blogspot.in
+blog: http://sillycodes.com
